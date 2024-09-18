@@ -96,6 +96,8 @@ public class MainMenu {
 			case 2:
 				token = (new VideoModule()).videoModule(token);
 				break;
+			case 3:
+				break;
 			case 0:
 				System.out.println("Have a nice day!");
 				break;
