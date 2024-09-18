@@ -40,7 +40,6 @@ public class WatchModule {
 	{
 		watchThread.setDaemon(true);
 	}
-	
 	public void watchMenu(VideoModel videoModel, Optional<String> token) {
 		this.videoModel = videoModel;
 		this.video = videoModel.getDtoVideoDetailed().getVideo();
