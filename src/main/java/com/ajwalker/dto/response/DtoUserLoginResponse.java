@@ -2,13 +2,13 @@ package com.ajwalker.dto.response;
 
 public class DtoUserLoginResponse {
 	
-	private String username;
+	private String token;
 	
 	public DtoUserLoginResponse(String username) {
-		this.username = username;
+		this.token = username;
 	}
 	
 	public String getUsername() {
-		return username;
+		return token;
 	}
 }

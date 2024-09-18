@@ -1,4 +1,4 @@
-package com.ajwalker.module;
+package com.ajwalker.gui;
 
 import com.ajwalker.dto.response.DtoUserLoginResponse;
 
@@ -11,10 +11,10 @@ public class MainMenu {
 	public static MainMenu getInstance() {
 		return instance;
 	}
-	private  Optional<String> token;
+	private  Optional<String> token = Optional.empty();
 	private  Scanner scanner = new Scanner(System.in);
 	
-	public static void mainMenu(){
+	public void mainMenu(){
 		int opt;
 		do{
 			if (token.isEmpty()) opt = anonymousMainMenu();

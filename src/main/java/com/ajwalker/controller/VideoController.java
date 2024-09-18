@@ -2,6 +2,7 @@ package com.ajwalker.controller;
 
 import com.ajwalker.dto.request.DtoTokenRequest;
 import com.ajwalker.dto.request.DtoVideoNameFilterRequest;
+import com.ajwalker.dto.request.DtoVideoToken;
 import com.ajwalker.dto.response.DtoVideoThumbnailResponse;
 import com.ajwalker.entity.Video;
 import com.ajwalker.dto.response.DtoVideoDetailed;
@@ -76,6 +77,16 @@ public class VideoController {
         }
     }
     
+    public List<DtoVideoThumbnailResponse> findTrending20(){
+        try{
+            return videoService.findTrending20();
+        }
+        catch (Exception e) {
+            System.out.println("could not show trending20(controller)..." + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+    
     public DtoVideoDetailed generateVideoModel(Video video) {
         try{
             return videoService.generateVideoModel(video);
@@ -93,4 +104,6 @@ public class VideoController {
             System.out.println("could not watch video(controller)..." + e.getMessage());
         }
     }
+    
+    
 }

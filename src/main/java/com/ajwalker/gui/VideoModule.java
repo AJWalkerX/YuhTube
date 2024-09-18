@@ -1,4 +1,4 @@
-package com.ajwalker.module;
+package com.ajwalker.gui;
 
 import com.ajwalker.controller.VideoController;
 import com.ajwalker.dto.request.DtoTokenRequest;
@@ -63,7 +63,7 @@ public class VideoModule {
 				videosToWatch = showMyVideos();
 				break;
 			case 4:
-				// show what's trending
+				videosToWatch = findTrending20();
 				break;
 			case 5:
 				chooseVideoToWatch();
@@ -73,6 +73,12 @@ public class VideoModule {
 		}
 		
 		return choice;
+	}
+	
+	private List<DtoVideoThumbnailResponse> findTrending20() {
+		List<DtoVideoThumbnailResponse> trending20 = videoController.findTrending20();
+		printVideos(trending20);
+		return trending20;
 	}
 	
 	private void chooseVideoToWatch() {

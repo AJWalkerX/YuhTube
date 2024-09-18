@@ -5,7 +5,43 @@ public class Video extends BaseEntity {
     private String title;
     private String content;
     private String description;
+    private Long likeCount;
+    private Long dislikeCount;
+    private Long commentCount;
     private Long viewCount;
+    private Double popularityIndex;
+    
+    public Long getLikeCount() {
+        return likeCount;
+    }
+    
+    public void setLikeCount(Long likeCount) {
+        this.likeCount = likeCount;
+    }
+    
+    public Long getDislikeCount() {
+        return dislikeCount;
+    }
+    
+    public void setDislikeCount(Long dislikeCount) {
+        this.dislikeCount = dislikeCount;
+    }
+    
+    public Long getCommentCount() {
+        return commentCount;
+    }
+    
+    public void setCommentCount(Long commentCount) {
+        this.commentCount = commentCount;
+    }
+    
+    public Double getPopularityIndex() {
+        return popularityIndex;
+    }
+    
+    public void setPopularityIndex(Double popularityIndex) {
+        this.popularityIndex = popularityIndex;
+    }
     
     public Long getViewCount() {
         return viewCount;

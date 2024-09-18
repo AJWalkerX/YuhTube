@@ -1,4 +1,4 @@
-package com.ajwalker.module;
+package com.ajwalker.gui;
 
 
 
@@ -21,7 +21,6 @@ public class LoginMenu {
 	public Optional<DtoUserLoginResponse> loginModule(){
 		return loginMenu();
 	}
-	
 	
 	
 	private Optional<DtoUserLoginResponse> loginMenu(){

@@ -1,4 +1,4 @@
-package com.ajwalker.module;
+package com.ajwalker.gui;
 
 
 import com.ajwalker.controller.UserController;

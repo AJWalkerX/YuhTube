@@ -1,8 +1,6 @@
 package com.ajwalker.repository;
 
 import com.ajwalker.database.DatabaseHelper;
-import com.ajwalker.entity.Like;
-import com.ajwalker.entity.User;
 import com.ajwalker.entity.UserComment;
 import com.ajwalker.utility.ICRUD;
 
@@ -46,14 +44,14 @@ public class CommentRepository implements ICRUD<UserComment> {
 
     @Override
     public List<UserComment> findAll() {
-        String sql = "SELECT * FROM " + TABLE_NAME +" ORDER BY id DESC";
+        String sql = "SELECT * FROM " + TABLE_NAME +" WHERE state != 0 ORDER BY id DESC";
         Optional<ResultSet> resultSet = databaseHelper.executeQuery(sql);
         return resultSet.map(set -> generateList(UserComment.class, set)).orElseGet(ArrayList::new);
     }
 
     @Override
     public Optional<UserComment> findById(Long id) {
-        String sql = "SELECT * FROM " + TABLE_NAME +" WHERE id = "+ id +" ORDER BY id DESC";
+        String sql = "SELECT * FROM " + TABLE_NAME +" WHERE state != 0 AND id = "+ id +" ORDER BY id DESC";
         Optional<ResultSet> resultSet = databaseHelper.executeQuery(sql);
         if (resultSet.isPresent()) {
             return findBy(UserComment.class, resultSet.get());
@@ -61,11 +59,12 @@ public class CommentRepository implements ICRUD<UserComment> {
         return Optional.empty();
     }
 	
-	public List<UserComment> countComment(Long videoId) {
-        String sql = "SELECT * FROM " + TABLE_NAME +" WHERE video_id = "+ videoId +" ORDER" +
+	public List<UserComment> findByVideoId(Long videoId) {
+        String sql = "SELECT * FROM " + TABLE_NAME +" WHERE state != 0 AND video_id = "+ videoId +" ORDER" +
                 " BY" +
                 " id DESC";
         Optional<ResultSet> resultSet = databaseHelper.executeQuery(sql);
         return resultSet.map(set -> generateList(UserComment.class, set)).orElseGet(ArrayList::new);
 	}
+ 
 }

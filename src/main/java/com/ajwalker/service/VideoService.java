@@ -3,10 +3,13 @@ package com.ajwalker.service;
 import com.ajwalker.dto.request.DtoTokenRequest;
 import com.ajwalker.dto.request.DtoVideoNameFilterRequest;
 import com.ajwalker.dto.response.DtoVideoThumbnailResponse;
+import com.ajwalker.entity.Like;
 import com.ajwalker.entity.User;
 import com.ajwalker.entity.Video;
 import com.ajwalker.dto.response.DtoVideoDetailed;
+import com.ajwalker.repository.TrendingRepository;
 import com.ajwalker.repository.VideoRepository;
+import com.ajwalker.utility.PopularityAction;
 
 import java.util.List;
 import java.util.Optional;
@@ -75,7 +78,7 @@ public class VideoService {
     
     public List<DtoVideoThumbnailResponse> showMyVideos(DtoTokenRequest tokenRequest) {
         String token = tokenRequest.getToken();
-        Optional<User> optUser = UserService.getInstance().getUserIdByToken(token);
+        Optional<User> optUser = UserService.getInstance().getUserByToken(token);
         if (optUser.isEmpty()) throw new RuntimeException("No such user in db by token(service)");
         User user = optUser.get();
         List<Video> videos = videoRepository.findByCreatorId(user.getId());
@@ -83,16 +86,44 @@ public class VideoService {
     }
 	
 	public DtoVideoDetailed generateVideoModel(Video video) {
-        Long likeCount = LikeService.getInstance().countLikes(video.getId());
-        Long dislikeCount = LikeService.getInstance().countDislikes(video.getId());
-        Long commentCount = CommentService.getInstance().countComment(video.getId());
-        
-        return new DtoVideoDetailed(video, likeCount, dislikeCount, commentCount);
+        return new DtoVideoDetailed(video);
         
 	}
     
+    public List<DtoVideoThumbnailResponse> findTrending20(){
+        /*List<Video> trending20 = TrendingRepository.getInstance().findTrending20();
+        return videoToDto(trending20);*/
+        List<Video> trending20 = videoRepository.findTrending20();
+        return videoToDto(trending20);
+    }
+    
     public void watched(Video video) {
         video.setViewCount(video.getViewCount() + 1);
+        video.setPopularityIndex(video.getPopularityIndex() + 0.6);
         update(video);
+    }
+    
+    public void updatePopularityIndex(Video video, Like like, PopularityAction popularityAction) {
+        switch(like.getState()){
+            case 1:
+                video.setLikeCount(video.getLikeCount() - 1);
+                video.setPopularityIndex(video.getPopularityIndex() - 0.3);
+                break;
+            case -1:
+                video.setDislikeCount(video.getDislikeCount() -1);
+                video.setPopularityIndex(video.getPopularityIndex() + 0.3);
+                break;
+        }
+        
+        switch (popularityAction){
+            case LIKE:
+                video.setLikeCount(video.getLikeCount() + 1);
+                video.setPopularityIndex(video.getPopularityIndex() + 0.3);
+                break;
+            case DISLIKE:
+                video.setLikeCount(video.getLikeCount() + 1);
+                video.setPopularityIndex(video.getPopularityIndex() - 0.3);
+                break;
+        }
     }
 }
