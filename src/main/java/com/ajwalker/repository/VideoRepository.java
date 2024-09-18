@@ -26,8 +26,13 @@ public class VideoRepository implements ICRUD<Video> {
         }
         return instance;
     }
-
-
+    /*
+    SELECT v.id, COUNT(l.id WHERE l.state = 1) AS likes FROM tblvideo v
+    JOIN tbllike l ON l.video_id = v.id
+    JOIN tblusercomment uc ON uc.video_id = v.id
+    GROUP BY video_id ORDER BY likes;
+     */
+    
     @Override
     public boolean save(Video video) {
         return databaseHelper.executeUpdate(generateInsert(video, TABLE_NAME));
@@ -45,10 +50,12 @@ public class VideoRepository implements ICRUD<Video> {
 
     @Override
     public List<Video> findAll() {
-        sql = "SELECT * FROM " + TABLE_NAME +" ORDER BY id DESC";
+        sql = "SELECT * FROM " + TABLE_NAME + " WHERE state != 0 ORDER BY id DESC";
         Optional<ResultSet> resultSet = databaseHelper.executeQuery(sql);
         return resultSet.map(set -> generateList(Video.class, set)).orElseGet(ArrayList::new);
     }
+    
+    
 
     @Override
     public Optional<Video> findById(Long id) {
@@ -61,13 +68,20 @@ public class VideoRepository implements ICRUD<Video> {
     }
     
     public List<Video> findByTitle(String videoTitle) {
-        sql = "SELECT * FROM " + TABLE_NAME +" WHERE title ILIKE '%"+ videoTitle +"%' ORDER BY id DESC";
+        sql = "SELECT * FROM " + TABLE_NAME + " WHERE state != 0 AND title ILIKE '%"+ videoTitle +"%' ORDER BY " +
+                "id DESC";
         Optional<ResultSet> resultSet = databaseHelper.executeQuery(sql);
         return resultSet.map(set -> generateList(Video.class, set)).orElseGet(ArrayList::new);
     }
     
     public List<Video> findByCreatorId(Long userId) {
-        sql = "SELECT * FROM " + TABLE_NAME +" WHERE creator_id = "+ userId +" ORDER BY id DESC";
+        sql = "SELECT * FROM " + TABLE_NAME +" WHERE state != 0 AND creator_id = "+ userId +" ORDER BY id DESC";
+        Optional<ResultSet> resultSet = databaseHelper.executeQuery(sql);
+        return resultSet.map(set -> generateList(Video.class, set)).orElseGet(ArrayList::new);
+    }
+    
+    public List<Video> findTrending20() {
+        sql = "SELECT * FROM " + TABLE_NAME + " WHERE state != 0 ORDER BY popularityindex DESC LIMIT 20";
         Optional<ResultSet> resultSet = databaseHelper.executeQuery(sql);
         return resultSet.map(set -> generateList(Video.class, set)).orElseGet(ArrayList::new);
     }

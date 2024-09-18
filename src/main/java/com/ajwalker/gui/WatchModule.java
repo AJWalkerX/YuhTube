@@ -1,12 +1,16 @@
-package com.ajwalker.module;
+package com.ajwalker.gui;
 
 import com.ajwalker.controller.CommentController;
 import com.ajwalker.controller.LikeController;
 import com.ajwalker.controller.VideoController;
+import com.ajwalker.dto.request.DtoCommentRequest;
 import com.ajwalker.dto.request.DtoLikeRequest;
+import com.ajwalker.dto.request.DtoVideoToken;
+import com.ajwalker.dto.response.DtoCommentResponsee;
 import com.ajwalker.entity.Video;
 import com.ajwalker.model.VideoModel;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
@@ -19,16 +23,16 @@ public class WatchModule {
 	private VideoController videoController = VideoController.getInstance();
 	private Video video;
 	private Optional<String> token;
-	
+	private Integer videoLength = 100_000;
 	Thread watchThread = new Thread(new Runnable() {
 		@Override
 		public void run() {
 			try {
-				Thread.sleep(10000);
+				Thread.sleep(videoLength/10);
 				videoController.watched(video);
 			}
 			catch (InterruptedException e) {
-				e.printStackTrace();
+			
 			}
 		}
 	});
@@ -38,7 +42,6 @@ public class WatchModule {
 	}
 	
 	public void watchMenu(VideoModel videoModel, Optional<String> token) {
-		watchThread.start();
 		this.videoModel = videoModel;
 		this.video = videoModel.getDtoVideoDetailed().getVideo();
 		this.token = token;
@@ -66,6 +69,7 @@ public class WatchModule {
 	private int watchMenuOptions(int opt) {
 		switch (opt) {
 			case 1:
+				watchThread.start();
 				System.out.println(video.getContent());
 				break;
 			case 2:
@@ -85,14 +89,15 @@ public class WatchModule {
 				}
 				break;
 			case 5:
+				readComments();
 				break;
-				case 6:
-					token = isLoggedIn();
-					if (token.isPresent()) {
-						var likeRequest = new DtoLikeRequest(video.getId(), token.get());
-						likeController.dislikeTheVideo(likeRequest);
-					}
-					break;
+			case 6:
+				token = isLoggedIn();
+				if (token.isPresent()) {
+					var likeRequest = new DtoLikeRequest(video.getId(), token.get());
+					likeController.dislikeTheVideo(likeRequest);
+				}
+				break;
 			case 7:
 				token = isLoggedIn();
 				if (token.isPresent()) {
@@ -107,6 +112,7 @@ public class WatchModule {
 				break;
 			case 0:
 				System.out.println("Going back...");
+				watchThread.interrupt();
 				break;
 			default:
 				System.out.println("Invalid option in watchmenuoptions");
@@ -116,11 +122,17 @@ public class WatchModule {
 		return opt;
 	}
 	
+	private void readComments() {
+		DtoVideoToken dtoVideoToken = new DtoVideoToken(video.getId());
+		List<DtoCommentResponsee> comments = commentController.readComments(dtoVideoToken);
+		comments.forEach(System.out::println);
+	}
+	
 	private void commentToTheVideo() {
 		System.out.print("Enter your comment here: ");
 		String comment = scanner.nextLine();
-		DtoComment
-		commentController.comment(video, user.get(), comment);
+		DtoCommentRequest commentRequest = new DtoCommentRequest(video.getId(), token.get(), comment);
+		commentController.comment(commentRequest);
 	}
 	
 	private Optional<String> isLoggedIn() {

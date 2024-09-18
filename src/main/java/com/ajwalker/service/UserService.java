@@ -58,14 +58,19 @@ public class UserService {
     
     
     public Optional<User> findByUsername(String username) {
-        sql = "SELECT * FROM tbluser WHERE username = '%s'".formatted(username);
-        Optional<ResultSet> resultSet = databaseHelper.executeQuery(sql);
-        if(resultSet.isPresent()) {
-            return SQLQueryBuilder.findBy(User.class, resultSet.get());
-        }
-        else return Optional.empty();
+        return userRepository.findByUsername(username);
     }
-    
+    public boolean softDelete (Long id){
+        Optional<User> userOptional = findById(id);
+        if(userOptional.isPresent()){
+            User user = userOptional.get();
+            System.out.println(user.getId());
+            user.setState(0);
+            return update(user);
+        }
+        else
+            return false;
+    }
     public Optional<DtoUserLoginResponse> login(DtoUserLoginRequest tempLoginRequest) {
         Optional<User> optUser = findByUsername(tempLoginRequest.getUsername());
         if(optUser.isEmpty()){
@@ -81,7 +86,7 @@ public class UserService {
         return Optional.ofNullable(new DtoUserLoginResponse(finalUsername));
     }
     
-    public Optional<User> getUserIdByToken(String token) {
+    public Optional<User> getUserByToken(String token) {
         return findByUsername(token);
     }
 }
