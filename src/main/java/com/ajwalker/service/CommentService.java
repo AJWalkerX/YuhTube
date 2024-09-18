@@ -56,7 +56,9 @@ public class CommentService {
         Optional<Video> optVideo = VideoRepository.getInstance().findById(videoId);
         if (optVideo.isEmpty()) throw new RuntimeException("Invalid video(service)...");
         Video video = optVideo.get();
-        video.setPopularityIndex(video.getPopularityIndex() + 0.1);
+        video.setCommentCount(video.getCommentCount() + 1);
+        VideoService.getInstance().update(video);
+        video.setPopularityIndex(video.getPopularityIndex() + 0.1f);
         save(userComment);
     }
     

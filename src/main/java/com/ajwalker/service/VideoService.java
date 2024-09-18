@@ -2,6 +2,7 @@ package com.ajwalker.service;
 
 import com.ajwalker.dto.request.DtoTokenRequest;
 import com.ajwalker.dto.request.DtoVideoNameFilterRequest;
+import com.ajwalker.dto.request.DtoVideoUploadRequest;
 import com.ajwalker.dto.response.DtoVideoThumbnailResponse;
 import com.ajwalker.entity.Like;
 import com.ajwalker.entity.User;
@@ -99,7 +100,7 @@ public class VideoService {
     
     public void watched(Video video) {
         video.setViewCount(video.getViewCount() + 1);
-        video.setPopularityIndex(video.getPopularityIndex() + 0.6);
+        video.setPopularityIndex(video.getPopularityIndex() + 0.6f);
         update(video);
     }
     
@@ -107,23 +108,37 @@ public class VideoService {
         switch(like.getState()){
             case 1:
                 video.setLikeCount(video.getLikeCount() - 1);
-                video.setPopularityIndex(video.getPopularityIndex() - 0.3);
+                video.setPopularityIndex(video.getPopularityIndex() - 0.3f);
                 break;
             case -1:
                 video.setDislikeCount(video.getDislikeCount() -1);
-                video.setPopularityIndex(video.getPopularityIndex() + 0.3);
+                video.setPopularityIndex(video.getPopularityIndex() + 0.3f);
                 break;
         }
         
         switch (popularityAction){
             case LIKE:
                 video.setLikeCount(video.getLikeCount() + 1);
-                video.setPopularityIndex(video.getPopularityIndex() + 0.3);
+                video.setPopularityIndex(video.getPopularityIndex() + 0.3f);
                 break;
             case DISLIKE:
-                video.setLikeCount(video.getLikeCount() + 1);
-                video.setPopularityIndex(video.getPopularityIndex() - 0.3);
+                video.setDislikeCount(video.getLikeCount() + 1);
+                video.setPopularityIndex(video.getPopularityIndex() - 0.3f);
                 break;
         }
+        update(video);
+    }
+    
+    public void uploadVideo(DtoVideoUploadRequest videoUploadRequest) {
+        String title = videoUploadRequest.getTitle();
+        String content = videoUploadRequest.getContent();
+        String description = videoUploadRequest.getDescription();
+        String token = videoUploadRequest.getCreatorToken();
+        Optional<User> optUser = UserService.getInstance().getUserByToken(token);
+        if (optUser.isEmpty()) throw new RuntimeException("No such user in db by token(service)");
+        User user = optUser.get();
+        Long creatorId = user.getId();
+        Video video = new Video(creatorId, title, content, description);
+        save(video);
     }
 }

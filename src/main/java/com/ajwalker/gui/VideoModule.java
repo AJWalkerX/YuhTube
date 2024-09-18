@@ -3,6 +3,7 @@ package com.ajwalker.gui;
 import com.ajwalker.controller.VideoController;
 import com.ajwalker.dto.request.DtoTokenRequest;
 import com.ajwalker.dto.request.DtoVideoNameFilterRequest;
+import com.ajwalker.dto.request.DtoVideoUploadRequest;
 import com.ajwalker.dto.response.DtoVideoThumbnailResponse;
 import com.ajwalker.entity.Video;
 import com.ajwalker.dto.response.DtoVideoDetailed;
@@ -35,6 +36,7 @@ public class VideoModule {
 					                   3. Show My Videos
 					                   4. What's Trending
 					                   5. Choose Video To Watch
+					                   6. Upload Video
 					                   0. Go Back
 					                   
 					                   """);
@@ -68,11 +70,33 @@ public class VideoModule {
 			case 5:
 				chooseVideoToWatch();
 				break;
+			case 6:
+				if (token.isEmpty()){
+					System.out.println("You must log in to see your videos");
+					token = MainMenu.getInstance().login();
+					if(token.isEmpty()){
+						System.out.println("Cannot see your videos since you have not logged in");
+						break;
+					}
+				}
+				uploadVideo();
+				break;
 			default:
 				System.out.println("Invalid option!");
 		}
 		
 		return choice;
+	}
+	
+	private void uploadVideo() {
+		System.out.println("Drag your video here: ");
+		String content = scanner.nextLine();
+		System.out.println("What would you like the title to be?");
+		String title = scanner.nextLine();
+		System.out.println("and the description: ");
+		String description = scanner.nextLine();
+		var videoUploadRequest = new DtoVideoUploadRequest(title, content, description, token.get());
+		videoController.uploadVideo(videoUploadRequest);
 	}
 	
 	private List<DtoVideoThumbnailResponse> findTrending20() {
